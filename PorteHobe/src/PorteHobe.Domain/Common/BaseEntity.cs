@@ -1,8 +1,11 @@
 ﻿using System;
 
-public class Class1
+namespace PorteHobe.Domain.Common
 {
-	public Class1()
-	{
-	}
+    public class BaseEntity
+    {
+        public int Id { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+    }
 }

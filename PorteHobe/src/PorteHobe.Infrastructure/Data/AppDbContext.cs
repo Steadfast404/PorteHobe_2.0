@@ -10,6 +10,8 @@ namespace Portehobe.Model
         {
         }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Resource> Resources { get; set; }
         public DbSet<Subject> Subjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

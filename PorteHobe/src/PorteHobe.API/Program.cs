@@ -6,14 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Portehobe.API.Middleware;
 using Portehobe.Infrastructure.Services;
 using Portehobe.Model;
+using PorteHobe.API.Data;
+using PorteHobe.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 
-// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -59,9 +59,19 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Register services
+builder.Services.AddScoped<IStudyResourceService, ResourceService>();
+builder.Services.AddHttpClient<IYouTubeService, YouTubeService>();  // ← NEW
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    SeedData.Initialize(context);
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -69,16 +79,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 
 app.UseMiddleware<TokenBlacklistMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapStaticAssets();
-app.MapRazorPages().WithStaticAssets();
+app.MapRazorPages()
+   .WithStaticAssets();
 app.MapControllers();
 
 app.Run();
