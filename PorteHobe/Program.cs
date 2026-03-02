@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -61,9 +62,14 @@ builder.Services.AddAuthentication(options =>
 
 // Register services
 builder.Services.AddScoped<IStudyResourceService, ResourceService>();
-builder.Services.AddHttpClient<IYouTubeService, YouTubeService>();  // ← NEW
+builder.Services.AddHttpClient<IYouTubeService, YouTubeService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Seed the database
 using (var scope = app.Services.CreateScope())
@@ -89,5 +95,4 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 app.MapControllers();
-
 app.Run();
