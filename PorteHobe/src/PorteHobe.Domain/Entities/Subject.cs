@@ -1,8 +1,8 @@
-﻿using System;
-
-public class Class1
+namespace Portehobe.Model
 {
-	public Class1()
-	{
-	}
+    public class Subject
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
 }
