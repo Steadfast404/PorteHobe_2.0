@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PorteHobe.Domain.Entities;  // For Resource
 
-namespace Portehobe.Model
+namespace Portehobe.Model  // AppUser and Subject are already in this namespace
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {
@@ -10,7 +11,6 @@ namespace Portehobe.Model
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Subject> Subjects { get; set; }
 
@@ -18,7 +18,6 @@ namespace Portehobe.Model
         {
             base.OnModelCreating(builder);
 
-            // Seed roles with fixed IDs to prevent non-deterministic model changes
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "1" },
                 new IdentityRole { Id = "2", Name = "Student", NormalizedName = "STUDENT", ConcurrencyStamp = "2" }

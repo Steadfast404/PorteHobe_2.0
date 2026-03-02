@@ -1,15 +1,17 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Portehobe.Model;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Portehobe.Infrastructure.Services
 {
     public interface IJwtService
     {
-        string GenerateToken(ApplicationUser user, IList<string> roles);
+        string GenerateToken(AppUser user, IList<string> roles);  // ← Changed
     }
 
     public class JwtService : IJwtService
@@ -21,7 +23,7 @@ namespace Portehobe.Infrastructure.Services
             _config = config;
         }
 
-        public string GenerateToken(ApplicationUser user, IList<string> roles)
+        public string GenerateToken(AppUser user, IList<string> roles)  // ← Changed
         {
             var claims = new List<Claim>
             {
