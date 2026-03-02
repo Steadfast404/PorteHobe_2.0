@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
+using PorteHobe.Domain.Entities;
+//using PorteHobe.Domain.Common;
 namespace Portehobe.Model
 {
     public class AppDbContext : IdentityDbContext<AppUser>
@@ -10,10 +11,10 @@ namespace Portehobe.Model
         {
         }
 
-        public DbSet<User> Users { get; set; }
+       // public DbSet<User> Users { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-
+        public DbSet<Term> Terms { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
