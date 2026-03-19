@@ -4,7 +4,7 @@ namespace PorteHobe.Domain.Entities
 {
     public class Term : BaseEntity
     {
-        public string UserId { get; set; } = "dummy-user-123";
+        public string UserId { get; set; } 
         public string EducationLevel { get; set; } // University or School
         public string? Semester { get; set; }
         public int Year { get; set; }
