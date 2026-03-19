@@ -57,3 +57,12 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{Portehobe_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  //ForgotPasswordModel
+}
+
+###

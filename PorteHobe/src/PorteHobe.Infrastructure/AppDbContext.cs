@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Portehobe.Model;
 using PorteHobe.Domain.Entities;  // For Resource
 
-namespace Portehobe.Model  // AppUser and Subject are already in this namespace
+namespace Portehobe.src.PorteHobe.Infrastructure  // AppUser and Subject are already in this namespace
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {
@@ -17,6 +18,8 @@ namespace Portehobe.Model  // AppUser and Subject are already in this namespace
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "1" },
