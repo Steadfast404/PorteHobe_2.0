@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Portehobe.API.Middleware;
 using Portehobe.Infrastructure.Services;
 using Portehobe.Model;
+using Portehobe.src.PorteHobe.Infrastructure;
 using PorteHobe.API.Data;
 using PorteHobe.API.Services;
 
@@ -63,6 +64,7 @@ builder.Services.AddAuthentication(options =>
 // Register services
 builder.Services.AddScoped<IStudyResourceService, ResourceService>();
 builder.Services.AddHttpClient<IYouTubeService, YouTubeService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

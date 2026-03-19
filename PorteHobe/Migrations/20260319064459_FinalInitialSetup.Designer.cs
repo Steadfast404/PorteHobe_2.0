@@ -5,15 +5,20 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Portehobe.Model;
+using Portehobe.src.PorteHobe.Infrastructure;
 
 #nullable disable
 
 namespace Portehobe.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.Designer.cs
+    [Migration("20260302234549_InitialCreate")]
+    partial class InitialCreate
+========
     [Migration("20260319064459_FinalInitialSetup")]
     partial class FinalInitialSetup
+>>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +247,8 @@ namespace Portehobe.Migrations
                     b.ToTable("Resources");
                 });
 
+<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.Designer.cs
+========
             modelBuilder.Entity("PorteHobe.Domain.Entities.Term", b =>
                 {
                     b.Property<int>("Id")
@@ -285,6 +292,7 @@ namespace Portehobe.Migrations
                     b.ToTable("Terms");
                 });
 
+>>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.Designer.cs
             modelBuilder.Entity("Portehobe.Model.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -366,11 +374,30 @@ namespace Portehobe.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.ToTable("Subjects");
                 });

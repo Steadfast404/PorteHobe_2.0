@@ -8,7 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Portehobe.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.cs
+    public partial class InitialCreate : Migration
+========
     public partial class FinalInitialSetup : Migration
+>>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -87,7 +91,11 @@ namespace Portehobe.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -268,6 +276,13 @@ namespace Portehobe.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_Code",
+                table: "Subjects",
+                column: "Code",
+                unique: true,
+                filter: "[Code] IS NOT NULL");
         }
 
         /// <inheritdoc />
