@@ -12,8 +12,13 @@ using Portehobe.src.PorteHobe.Infrastructure;
 namespace Portehobe.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.Designer.cs
     [Migration("20260302234549_InitialCreate")]
     partial class InitialCreate
+========
+    [Migration("20260319064459_FinalInitialSetup")]
+    partial class FinalInitialSetup
+>>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +247,52 @@ namespace Portehobe.Migrations
                     b.ToTable("Resources");
                 });
 
+<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.Designer.cs
+========
+            modelBuilder.Entity("PorteHobe.Domain.Entities.Term", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EducationLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Semester")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TermName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Terms");
+                });
+
+>>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.Designer.cs
             modelBuilder.Entity("Portehobe.Model.AppUser", b =>
                 {
                     b.Property<string>("Id")
