@@ -7,12 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Portehobe.Migrations
 {
-    /// <inheritdoc />
-<<<<<<<< HEAD:PorteHobe/Migrations/20260302234549_InitialCreate.cs
-    public partial class InitialCreate : Migration
-========
     public partial class FinalInitialSetup : Migration
->>>>>>>> dev:PorteHobe/Migrations/20260319064459_FinalInitialSetup.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
