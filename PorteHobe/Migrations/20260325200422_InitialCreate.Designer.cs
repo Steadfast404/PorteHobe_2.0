@@ -12,8 +12,8 @@ using Portehobe.src.PorteHobe.Infrastructure;
 namespace Portehobe.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260319202553_AddTaskItemModule")]
-    partial class AddTaskItemModule
+    [Migration("20260325200422_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -250,6 +250,10 @@ namespace Portehobe.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -273,14 +277,12 @@ namespace Portehobe.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("Terms");
                 });
@@ -382,6 +384,9 @@ namespace Portehobe.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("TermId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -390,6 +395,8 @@ namespace Portehobe.Migrations
                     b.HasIndex("Code")
                         .IsUnique()
                         .HasFilter("[Code] IS NOT NULL");
+
+                    b.HasIndex("TermId");
 
                     b.ToTable("Subjects");
                 });
@@ -417,7 +424,7 @@ namespace Portehobe.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SubjectId")
+                    b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -427,13 +434,40 @@ namespace Portehobe.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("TaskItems");
+                });
+
+            modelBuilder.Entity("Portehobe.src.PorteHobe.Domain.Entities.TodoItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
-                    b.ToTable("TaskItems");
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("TodoItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -485,6 +519,67 @@ namespace Portehobe.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PorteHobe.Domain.Entities.Term", b =>
+                {
+                    b.HasOne("Portehobe.Model.AppUser", "AppUser")
+                        .WithMany("Terms")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("Portehobe.Model.Subject", b =>
+                {
+                    b.HasOne("PorteHobe.Domain.Entities.Term", "Term")
+                        .WithMany("Subjects")
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Term");
+                });
+
+            modelBuilder.Entity("Portehobe.src.PorteHobe.Domain.Entities.TaskItem", b =>
+                {
+                    b.HasOne("Portehobe.Model.Subject", "Subject")
+                        .WithMany("TaskItems")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("Portehobe.src.PorteHobe.Domain.Entities.TodoItem", b =>
+                {
+                    b.HasOne("Portehobe.Model.AppUser", "AppUser")
+                        .WithMany("TodoItems")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("PorteHobe.Domain.Entities.Term", b =>
+                {
+                    b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("Portehobe.Model.AppUser", b =>
+                {
+                    b.Navigation("Terms");
+
+                    b.Navigation("TodoItems");
+                });
+
+            modelBuilder.Entity("Portehobe.Model.Subject", b =>
+                {
+                    b.Navigation("TaskItems");
                 });
 #pragma warning restore 612, 618
         }

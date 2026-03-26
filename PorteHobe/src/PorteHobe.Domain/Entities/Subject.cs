@@ -1,4 +1,6 @@
+using Portehobe.src.PorteHobe.Domain.Entities;
 using PorteHobe.Domain.Common;
+using PorteHobe.Domain.Entities;
 
 namespace Portehobe.Model
 {
@@ -12,9 +14,12 @@ namespace Portehobe.Model
 
         // Optional description
         public string? Description { get; set; }
+        //Link to Term
+        public int TermId { get; set; }
+        public Term Term { get; set; }
 
-        // --- Relationships (To be uncommented in Phase 2 & 3) ---
-        // public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>();
-        // public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
+        // --- Relationships: A subject may have multiple tasks and study sessions ---
+        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+        //study session
     }
 }

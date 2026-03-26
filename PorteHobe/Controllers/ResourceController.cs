@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PorteHobe.API.DTOs;
 using PorteHobe.API.Services;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace PorteHobe.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ResourcesController : ControllerBase
     {
         private readonly IStudyResourceService _resourceService;

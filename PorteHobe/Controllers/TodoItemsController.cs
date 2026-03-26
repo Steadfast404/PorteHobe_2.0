@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Portehobe.src.PorteHobe.API.DTOs;
 using Portehobe.src.PorteHobe.API.Services;
 using System.Security.Claims;
@@ -8,6 +9,7 @@ namespace Portehobe.src.PorteHobe.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TodoItemsController : ControllerBase
     {
         private readonly ITodoItemService _todoService;
@@ -19,8 +21,8 @@ namespace Portehobe.src.PorteHobe.API.Controllers
 
         private string GetUserId()
         {
-            // Dummy ID until authentication is ready
-            return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "dev-test-user-001";
+            
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         [HttpGet]
