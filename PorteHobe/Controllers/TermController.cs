@@ -12,6 +12,7 @@ namespace PorteHobe.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TermController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -23,10 +24,9 @@ namespace PorteHobe.API.Controllers
 
         // 1. POST: api/Term/setup (Term create korar jonno)
         [HttpPost("setup")]
-        [AllowAnonymous]
         public async Task<IActionResult> SetupTerm([FromBody] TermSetupDto dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "dev-test-user-001";
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             string termName = dto.EducationLevel == "University"
                 ? $"{dto.Semester} {dto.Year}"
@@ -34,7 +34,7 @@ namespace PorteHobe.API.Controllers
 
             var term = new Term
             {
-                UserId = userId,
+                AppUserId = userId,
                 EducationLevel = dto.EducationLevel,
                 Semester = dto.Semester,
                 Year = dto.Year,
@@ -59,13 +59,12 @@ namespace PorteHobe.API.Controllers
 
         // 2. GET: api/Term/my-term (Postman-e dashboard data dekhar jonno)
         [HttpGet("my-term")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetMyTerm()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "dev-test-user-001";
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var term = await _context.Terms
-                .Where(t => t.UserId == userId)
+                .Where(t => t.AppUserId == userId)
                 .OrderByDescending(t => t.Id)
                 .FirstOrDefaultAsync();
 

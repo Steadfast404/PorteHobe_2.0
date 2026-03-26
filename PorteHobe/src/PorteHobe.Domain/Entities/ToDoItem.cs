@@ -1,4 +1,6 @@
-﻿namespace Portehobe.src.PorteHobe.Domain.Entities
+﻿using Portehobe.Model;
+
+namespace Portehobe.src.PorteHobe.Domain.Entities
 {
     public class TodoItem
     {
@@ -7,7 +9,9 @@
         public bool IsDone { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Linked ONLY to the user, nothing else!
-        public string UserId { get; set; } = string.Empty;
+        // Linked ONLY to the user
+        //public string UserId { get; set; } = string.Empty;
+        public string AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
     }
 }

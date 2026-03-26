@@ -1,78 +1,88 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Portehobe.src.PorteHobe.API.DTOs;
 using PorteHobe.API.DTOs;
 using PorteHobe.API.Services;
+using System.Security.Claims; // Needed for ClaimTypes
 
-namespace PorteHobe.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-public class SubjectsController : ControllerBase
+namespace PorteHobe.Controllers
 {
-    private readonly ISubjectService _subjectService;
-
-    public SubjectsController(ISubjectService subjectService)
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class SubjectsController : ControllerBase
     {
-        _subjectService = subjectService;
-    }
+        private readonly ISubjectService _subjectService;
 
-    // POST: /api/subjects
-    [HttpPost]
-    public async Task<IActionResult> CreateSubject([FromBody] CreateSubjectDto dto)
-    {
-        try
+        public SubjectsController(ISubjectService subjectService)
         {
-            var createdSubject = await _subjectService.CreateSubjectAsync(dto);
-            return CreatedAtAction(nameof(GetSubjectById), new { id = createdSubject.Id }, createdSubject);
+            _subjectService = subjectService;
         }
-        catch (InvalidOperationException ex)
+
+        // Add our trusty helper!
+        private string GetUserId()
         {
-            return BadRequest(new { message = ex.Message }); // Handles duplicate code error
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
-    }
 
-    // GET: /api/subjects?pageNumber=1&pageSize=10
-    [HttpGet]
-    public async Task<IActionResult> GetAllSubjects([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-    {
-        var subjects = await _subjectService.GetAllSubjectsAsync(pageNumber, pageSize);
-        return Ok(subjects);
-    }
-
-    // GET: /api/subjects/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSubjectById(int id)
-    {
-        var subject = await _subjectService.GetSubjectByIdAsync(id);
-        if (subject == null) return NotFound();
-
-        return Ok(subject);
-    }
-
-    // PUT: /api/subjects/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSubject(int id, [FromBody] UpdateSubjectDto dto)
-    {
-        try
+        [HttpPost]
+        public async Task<IActionResult> CreateSubject([FromBody] CreateSubjectDto dto)
         {
-            var updatedSubject = await _subjectService.UpdateSubjectAsync(id, dto);
-            if (updatedSubject == null) return NotFound();
-
-            return Ok(updatedSubject);
+            try
+            {
+                // Pass the UserId to the service!
+                var createdSubject = await _subjectService.CreateSubjectAsync(dto, GetUserId());
+                return CreatedAtAction(nameof(GetSubjectById), new { id = createdSubject.Id }, createdSubject);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        catch (InvalidOperationException ex)
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSubjects([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            return BadRequest(new { message = ex.Message });
+            // Pass the UserId!
+            var subjects = await _subjectService.GetAllSubjectsAsync(pageNumber, pageSize, GetUserId());
+            return Ok(subjects);
         }
-    }
 
-    // DELETE: /api/subjects/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSubject(int id)
-    {
-        var success = await _subjectService.DeleteSubjectAsync(id);
-        if (!success) return NotFound();
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSubjectById(int id)
+        {
+            // Pass the UserId!
+            var subject = await _subjectService.GetSubjectByIdAsync(id, GetUserId());
+            if (subject == null) return NotFound();
 
-        return NoContent(); // 204 No Content is standard for successful deletions
+            return Ok(subject);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateSubject(int id, [FromBody] UpdateSubjectDto dto)
+        {
+            try
+            {
+                // Pass the UserId!
+                var updatedSubject = await _subjectService.UpdateSubjectAsync(id, dto, GetUserId());
+                if (updatedSubject == null) return NotFound();
+
+                return Ok(updatedSubject);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSubject(int id)
+        {
+            // Pass the UserId!
+            var success = await _subjectService.DeleteSubjectAsync(id, GetUserId());
+            if (!success) return NotFound();
+
+            return NoContent();
+        }
     }
 }

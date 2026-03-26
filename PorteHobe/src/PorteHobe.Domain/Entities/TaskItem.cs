@@ -1,4 +1,6 @@
-﻿namespace Portehobe.src.PorteHobe.Domain.Entities
+﻿using Portehobe.Model;
+
+namespace Portehobe.src.PorteHobe.Domain.Entities
 {
     public enum TaskPriority
     {
@@ -25,8 +27,8 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
 
-        // Relationships
-        public string UserId { get; set; } = string.Empty;
+        // link to Subject
         public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
     }
 }

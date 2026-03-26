@@ -2,98 +2,107 @@
 using Portehobe.Model;
 using Portehobe.src.PorteHobe.API.DTOs;
 using Portehobe.src.PorteHobe.Infrastructure;
+using Portehobe.src.PorteHobe.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace PorteHobe.API.Services;
-
-public class SubjectService : ISubjectService
+namespace PorteHobe.API.Services
 {
-    private readonly AppDbContext _context;
-
-    public SubjectService(AppDbContext context)
+    public class SubjectService : ISubjectService
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<SubjectDto> CreateSubjectAsync(CreateSubjectDto dto)
-    {
-        // Check for duplicate code (if code is provided)
-        if (!string.IsNullOrEmpty(dto.Code))
+        public SubjectService(AppDbContext context)
         {
-            var exists = await _context.Subjects.AnyAsync(s => s.Code == dto.Code);
-            if (exists) throw new InvalidOperationException($"Subject code '{dto.Code}' already exists.");
+            _context = context;
         }
 
-        var subject = new Subject
+        public async Task<SubjectDto> CreateSubjectAsync(CreateSubjectDto dto, string userId)
         {
-            Name = dto.Name,
-            Code = dto.Code,
-            Description = dto.Description
-        };
+            // 1. Find the logged-in user's active term
+            var activeTerm = await _context.Terms
+                .Where(t => t.AppUserId == userId)
+                .OrderByDescending(t => t.Id) // Grabs the newest one
+                .FirstOrDefaultAsync();
 
-        _context.Subjects.Add(subject);
-        await _context.SaveChangesAsync();
+            if (activeTerm == null)
+            {
+                throw new InvalidOperationException("You must have an active term to create a subject.");
+            }
 
-        return MapToDto(subject);
-    }
+            var subject = new Subject
+            {
+                Name = dto.Name,
+                Code = dto.Code,
+                Description = dto.Description,
+                TermId = activeTerm.Id 
+            };
 
-    public async Task<SubjectDto?> GetSubjectByIdAsync(int id)
-    {
-        var subject = await _context.Subjects.FindAsync(id);
-        return subject == null ? null : MapToDto(subject);
-    }
+            _context.Subjects.Add(subject);
+            await _context.SaveChangesAsync();
 
-    public async Task<IEnumerable<SubjectDto>> GetAllSubjectsAsync(int pageNumber = 1, int pageSize = 10)
-    {
-        var subjects = await _context.Subjects
-            .OrderByDescending(s => s.CreatedAt)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return subjects.Select(MapToDto);
-    }
-
-    public async Task<SubjectDto?> UpdateSubjectAsync(int id, UpdateSubjectDto dto)
-    {
-        var subject = await _context.Subjects.FindAsync(id);
-        if (subject == null) return null;
-
-        // Check duplicate code on update
-        if (!string.IsNullOrEmpty(dto.Code) && subject.Code != dto.Code)
-        {
-            var exists = await _context.Subjects.AnyAsync(s => s.Code == dto.Code);
-            if (exists) throw new InvalidOperationException($"Subject code '{dto.Code}' already exists.");
+            return MapToDto(subject);
         }
 
-        subject.Name = dto.Name;
-        subject.Code = dto.Code;
-        subject.Description = dto.Description;
-
-        await _context.SaveChangesAsync();
-        return MapToDto(subject);
-    }
-
-    public async Task<bool> DeleteSubjectAsync(int id)
-    {
-        var subject = await _context.Subjects.FindAsync(id);
-        if (subject == null) return false;
-
-        _context.Subjects.Remove(subject);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
-    // Helper method to keep mapping clean
-    private static SubjectDto MapToDto(Subject subject)
-    {
-        return new SubjectDto
+        public async Task<IEnumerable<SubjectDto>> GetAllSubjectsAsync(int pageNumber, int pageSize, string userId)
         {
-            Id = subject.Id,
-            Name = subject.Name,
-            Code = subject.Code,
-            Description = subject.Description,
-            CreatedAt = subject.CreatedAt,
-            UpdatedAt = subject.UpdatedAt
-        };
+            var subjects = await _context.Subjects
+                .Where(s => s.Term.AppUserId == userId) // SECURITY: Only get THEIR subjects
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return subjects.Select(MapToDto);
+        }
+
+        public async Task<SubjectDto?> GetSubjectByIdAsync(int id, string userId)
+        {
+            var subject = await _context.Subjects
+                .FirstOrDefaultAsync(s => s.Id == id && s.Term.AppUserId == userId); // SECURITY CHECK
+
+            return subject == null ? null : MapToDto(subject);
+        }
+
+        public async Task<SubjectDto?> UpdateSubjectAsync(int id, UpdateSubjectDto dto, string userId)
+        {
+            var subject = await _context.Subjects
+                .FirstOrDefaultAsync(s => s.Id == id && s.Term.AppUserId == userId); // SECURITY CHECK
+
+            if (subject == null) return null;
+
+            subject.Name = dto.Name;
+            subject.Code = dto.Code;
+            subject.Description = dto.Description;
+
+            await _context.SaveChangesAsync();
+            return MapToDto(subject);
+        }
+
+        public async Task<bool> DeleteSubjectAsync(int id, string userId)
+        {
+            var subject = await _context.Subjects
+                .FirstOrDefaultAsync(s => s.Id == id && s.Term.AppUserId == userId); // SECURITY CHECK
+
+            if (subject == null) return false;
+
+            _context.Subjects.Remove(subject);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Keep your existing MapToDto helper method down here...
+        private static SubjectDto MapToDto(Subject subject)
+        {
+            return new SubjectDto
+            {
+                Id = subject.Id,
+                Name = subject.Name,
+                Code = subject.Code,
+                Description = subject.Description,
+                //TermId = subject.TermId
+            };
+        }
     }
 }

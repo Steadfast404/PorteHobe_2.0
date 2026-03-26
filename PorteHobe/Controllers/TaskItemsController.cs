@@ -9,7 +9,7 @@ namespace PorteHobe.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // authentication is required for all endpoints in this controller
+    [Authorize]
     public class TaskItemsController : ControllerBase
     {
         private readonly ITaskItemService _taskService;
@@ -21,8 +21,7 @@ namespace PorteHobe.API.Controllers
 
         private string GetUserId()
         {
-            // For now, returning a dummy ID if no user is logged in
-            return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "dev-test-user-001";
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         [HttpGet]

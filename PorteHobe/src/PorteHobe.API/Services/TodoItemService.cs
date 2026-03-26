@@ -20,7 +20,7 @@ namespace Portehobe.src.PorteHobe.API.Services
         public async Task<IEnumerable<TodoItemDto>> GetUserTodosAsync(string userId)
         {
             return await _context.TodoItems
-                .Where(t => t.UserId == userId)
+                .Where(t => t.AppUserId == userId)
                 .OrderByDescending(t => t.CreatedAt) // Newest first for a to-do list!
                 .Select(t => new TodoItemDto
                 {
@@ -37,7 +37,7 @@ namespace Portehobe.src.PorteHobe.API.Services
             var todo = new TodoItem
             {
                 Description = dto.Description,
-                UserId = userId
+                AppUserId = userId
             };
 
             _context.TodoItems.Add(todo);
@@ -55,7 +55,7 @@ namespace Portehobe.src.PorteHobe.API.Services
         public async Task<bool> UpdateTodoAsync(int id, UpdateTodoItemDto dto, string userId)
         {
             var todo = await _context.TodoItems
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                .FirstOrDefaultAsync(t => t.Id == id && t.AppUserId == userId);
 
             if (todo == null) return false;
 
@@ -69,7 +69,7 @@ namespace Portehobe.src.PorteHobe.API.Services
         public async Task<bool> DeleteTodoAsync(int id, string userId)
         {
             var todo = await _context.TodoItems
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                .FirstOrDefaultAsync(t => t.Id == id && t.AppUserId == userId);
 
             if (todo == null) return false;
 
