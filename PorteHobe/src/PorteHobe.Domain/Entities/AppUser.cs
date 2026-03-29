@@ -16,5 +16,6 @@ namespace Portehobe.Model
         //Relationships: A user can have multiple terms and todo items
         public ICollection<Term> Terms { get; set; } = new List<Term>();
         public ICollection<TodoItem> TodoItems { get; set; } = new List<TodoItem>();
+        public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
     }
 }

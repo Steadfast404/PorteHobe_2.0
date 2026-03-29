@@ -1,4 +1,6 @@
 ﻿using Portehobe.Model;
+using PorteHobe.Domain.Entities;
+using System.Collections.Generic;
 
 namespace Portehobe.src.PorteHobe.Domain.Entities
 {
@@ -30,5 +32,7 @@ namespace Portehobe.src.PorteHobe.Domain.Entities
         // link to Subject
         public int SubjectId { get; set; }
         public Subject Subject { get; set; }
+
+        public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
     }
 }

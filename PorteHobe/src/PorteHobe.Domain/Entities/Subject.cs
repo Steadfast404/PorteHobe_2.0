@@ -21,5 +21,6 @@ namespace Portehobe.Model
         // --- Relationships: A subject may have multiple tasks and study sessions ---
         public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
         //study session
+        public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
     }
 }

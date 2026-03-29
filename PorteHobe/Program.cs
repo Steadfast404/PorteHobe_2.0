@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -90,9 +91,12 @@ builder.Services.AddSwaggerGen(c =>
 // Register services
 builder.Services.AddScoped<IStudyResourceService, ResourceService>();
 builder.Services.AddHttpClient<IYouTubeService, YouTubeService>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
 builder.Services.AddScoped<ITodoItemService, TodoItemService>();
+builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 
 var app = builder.Build();
 app.UseSwagger();
