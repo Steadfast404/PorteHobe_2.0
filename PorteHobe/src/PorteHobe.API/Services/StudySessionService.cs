@@ -131,5 +131,106 @@ namespace PorteHobe.API.Services
                 TotalSeconds = totalSeconds
             };
         }
+
+        public async Task<StudyStreakSummaryDto> GetStreakSummaryAsync(
+    string userId,
+    DateOnly fromDate,
+    DateOnly toDate,
+    int minDailySeconds = 600)
+        {
+            // Convert DateOnly range to DateTime (UTC) range
+            var fromDateTime = fromDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            var toDateTime = toDate.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc);
+
+            // Load completed sessions within the range
+            var sessions = await _context.StudySessions
+                .Where(s => s.AppUserId == userId
+                            && s.EndTime != null
+                            && s.StartTime >= fromDateTime
+                            && s.StartTime <= toDateTime)
+                .ToListAsync();
+
+            // Aggregate totals per day
+            var totalsByDate = new Dictionary<DateOnly, double>();
+
+            foreach (var s in sessions)
+            {
+                // For now we treat StartTime as UTC and use its date.
+                var date = DateOnly.FromDateTime(s.StartTime.Date);
+                var durationSeconds = (s.EndTime!.Value - s.StartTime).TotalSeconds;
+
+                if (totalsByDate.ContainsKey(date))
+                    totalsByDate[date] += durationSeconds;
+                else
+                    totalsByDate[date] = durationSeconds;
+            }
+
+            // Build daily summaries for every day in the range
+            var dailySummaries = new List<DailyStudySummaryDto>();
+            var current = fromDate;
+            while (current <= toDate)
+            {
+                totalsByDate.TryGetValue(current, out var totalSeconds);
+
+                dailySummaries.Add(new DailyStudySummaryDto
+                {
+                    Date = current,
+                    TotalSeconds = totalSeconds,
+                    IsStudyDay = totalSeconds >= minDailySeconds
+                });
+
+                current = current.AddDays(1);
+            }
+
+            // Compute today & last 7 days totals
+            var today = toDate; // by design, toDate is typically "today"
+            var todaySummary = dailySummaries.FirstOrDefault(d => d.Date == today);
+            var todayTotalSeconds = todaySummary?.TotalSeconds ?? 0.0;
+
+            var last7DaysTotalSeconds = dailySummaries
+                .Where(d => d.Date >= today.AddDays(-6) && d.Date <= today)
+                .Sum(d => d.TotalSeconds);
+
+            // Compute current streak (consecutive study days ending at "today")
+            int currentStreak = 0;
+            var streakDate = today;
+
+            while (streakDate >= fromDate)
+            {
+                var day = dailySummaries.FirstOrDefault(d => d.Date == streakDate);
+                if (day == null || !day.IsStudyDay)
+                    break;
+
+                currentStreak++;
+                streakDate = streakDate.AddDays(-1);
+            }
+
+            // Compute longest streak in the whole range
+            int longestStreak = 0;
+            int runningStreak = 0;
+
+            foreach (var day in dailySummaries.OrderBy(d => d.Date))
+            {
+                if (day.IsStudyDay)
+                {
+                    runningStreak++;
+                    if (runningStreak > longestStreak)
+                        longestStreak = runningStreak;
+                }
+                else
+                {
+                    runningStreak = 0;
+                }
+            }
+
+            return new StudyStreakSummaryDto
+            {
+                CurrentStreakDays = currentStreak,
+                LongestStreakDays = longestStreak,
+                TodayTotalSeconds = todayTotalSeconds,
+                Last7DaysTotalSeconds = last7DaysTotalSeconds,
+                DailySummaries = dailySummaries
+            };
+        }
     }
 }

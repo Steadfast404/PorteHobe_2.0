@@ -67,5 +67,19 @@ namespace PorteHobe.Controllers
             var total = await _studySessionService.GetTotalTimeForTaskAsync(GetUserId(), taskItemId);
             return Ok(total);
         }
+
+        [HttpGet("streak-summary")]
+        public async Task<IActionResult> GetStreakSummary(
+        [FromQuery] int daysBack = 365,
+        [FromQuery] int minDailySeconds = 600) // 10 minutes default
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var fromDate = today.AddDays(-daysBack + 1);
+
+            var summary = await _studySessionService.GetStreakSummaryAsync(
+                GetUserId(), fromDate, today, minDailySeconds);
+
+            return Ok(summary);
+        }
     }
 }
