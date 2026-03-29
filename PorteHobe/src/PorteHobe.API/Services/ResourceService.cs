@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Portehobe.Model;
+using Portehobe.src.PorteHobe.Infrastructure;
 using PorteHobe.API.DTOs;
 using PorteHobe.Domain.Entities;
 using System.Collections.Generic;
