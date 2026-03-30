@@ -15,14 +15,27 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Basic Services ---
-builder.Services.AddControllers();
+// Fix Enums to show as Strings instead of Numbers in JSON and Swagger
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 
 // Swagger Configuration with JWT Support
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "PorteHobe API", Version = "v1" });
-    
+
+    // Fix DateOnly to show as simple string "YYYY-MM-DD" in Swagger instead of complex object
+    c.MapType<DateOnly>(() => new OpenApiSchema 
+    { 
+        Type = "string", 
+        Format = "date" 
+    });
+
     // Eita Swagger-e 'Authorize' button niye ashbe
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
         In = ParameterLocation.Header,
@@ -85,6 +98,7 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
 builder.Services.AddScoped<ITodoItemService, TodoItemService>();
 builder.Services.AddScoped<IStudySessionService, StudySessionService>();
+builder.Services.AddScoped<IBadgeService, BadgeService>();
 
 var app = builder.Build();
 
