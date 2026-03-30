@@ -1,0 +1,68 @@
+﻿@Portehobe_HostAddress = https://localhost:7102
+
+POST {{Portehobe_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterDto
+}
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterDto
+}
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterDto
+}
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterDto
+}
+
+###
+
+GET {{Portehobe_HostAddress}}/api/test/student-only
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginDto
+}
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginDto
+}
+
+###
+
+POST {{Portehobe_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  //ForgotPasswordModel
+}
+
+###
